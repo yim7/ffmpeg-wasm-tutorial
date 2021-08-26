@@ -1,9 +1,14 @@
-// Run this script as a Web Worker so it doesn't block the
-// browser's main thread.
-// See: index.html.
-onmessage = (e) => {
-    const file = e.data[0];
-    let data;
+const vector2Array = (vector) => {
+    let r = []
+    for (let i = 0; i < vector.size(); i++) {
+        const e = vector.get(i);
+        r.push(e)
+        // console.log('response:', res);
+    }
+    return r
+}
+onmessage = (msg) => {
+    const file = msg.data;
 
     // Create and mount FS work directory.
     if (!FS.analyzePath('/work').exists) {
@@ -13,11 +18,10 @@ onmessage = (e) => {
 
     // Run the Wasm function we exported.
     const info = Module.run('/work/' + file.name);
-    console.log(info);
 
     // Post message back to main thread.
-    postMessage(info);
-
+    postMessage(vector2Array(info));
+    // console.log('post info', info);
     // Unmount the work directory.
     FS.unmount('/work');
 }
